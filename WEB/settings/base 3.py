@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "streams",
     "site_settings",
     "subscribers",
-    "blog",
 
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
