@@ -79,6 +79,60 @@ class CTABlock(blocks.StructBlock):
 
 
 
+			# STREAMFIELD LOGIC - button optional
+class LinkStructValue(blocks.StructValue):
+	# ADDITIONAL STREAMFIELD LOGIC TO ButtonBlock
+
+	def url(self):
+		button_page = self.get("button_page")
+		button_url  = self.get("button_url")
+
+		if button_page:
+			return button_page.url
+		elif button_url:
+			return button_url
+		else:
+			return None
+
+	def latest_blog_posts(self):
+		return BlogDetailPage.objects.live()[:3]
+
+
+
+			# STREAMFIELD LOGIC
+class ButtonBlock(blocks.StructBlock):
+	# EXTERNAL OR INTERNAL URL
+	button_page = blocks.PageChooserBlock(required = False, help_text = "if selected, this url will be used first") # internal
+	button_url  = blocks.URLBlock(required = False, help_text = "if added, this url will be used secondarily to the button page") # external
+	
+
+	def get_context(self, request, *args, **kwargs):
+		context = super().get_context(request, *args, **kwargs)
+		# context["latest_blog_posts"] = BlogDetailPage.objects.live().public()[:3]
+		return context
+
+
+	class Meta:
+			template    = "streams/button_block.html"
+			icon        = "placeholder"
+			label       = "Single Button"
+			value_class = LinkStructValue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

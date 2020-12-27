@@ -12,7 +12,34 @@
 		<div class="text-center">
 			<h1>{{ self.custom_title }}</h1>
 		</div>
+		<h4>
+				<ul>
+					{% for item in self.blog_authors.all %}
+						{% image item.author.image fill-50x50 as img %}
+					<li>
+						<img src="{{ img.url }}" alt="{{ item.author.name }}">
+
+						{{ item.author.name }}
+
+						{% if item.author.website %}
+							<a href="{{ item.author.website }}">(website)</a>
+						{% endif %}
+					</li>
+					{% endfor %}
+				</ul>
+			</h4>
 	</div>
+
+	<h2>Cathegories</h2>
+	<ul>
+		{% for cat in self.cathegories.all %}
+
+		<li>
+			<a href="{{ self.get_parent.url }}?cathegory={{ cat.slug }}">{{ cat.slug }}</a>
+			{{ cat.name }}
+		</li>
+		{% endfor %}
+	</ul>
 
 	<div class="conteiner">
 		<div class="row">

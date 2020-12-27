@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'wagtail.contrib.redirects',
     "wagtail.contrib.settings", # přidáno kvůli social_media_settings
     "wagtail.contrib.modeladmin", # přidáno kvůli subscribers
+    "wagtail.contrib.routable_page", # přidáno kvůli routablepage
+    "wagtail.contrib.sitemaps", # přidáno kvůli sitemaps
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.sitemaps", # přidáno kvůli sitemaps
 ]
 
 MIDDLEWARE = [

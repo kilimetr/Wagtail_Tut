@@ -12,6 +12,10 @@ from wagtail.core.models 		  import Orderable
 from modelcluster.fields 		  import ParentalKey
 from wagtail.admin.edit_handlers  import InlinePanel, MultiFieldPanel
 
+from wagtail.contrib.routable_page.models import RoutablePageMixin, route
+from django.shortcuts					  import render
+
+
 
 class HomePageCarouselImages(Orderable):
 	# BETWEEN 1 AND 5 IMAGES FOR THE HOME PAGE CAROUSEL
@@ -23,7 +27,58 @@ class HomePageCarouselImages(Orderable):
 	panels = [ImageChooserPanel("carousel_image"),]
 
 
-class HomePage(Page):
+		# STATIC
+# class HomePage(Page):
+
+# 	templates = "home/home_page.html"
+
+# 	max_count = 1
+
+# 	banner_title    = models.CharField(max_length = 100, blank = False, null = True)
+# 	banner_subtitle = RichTextField(features = ["bold", "italic"])
+# 	banner_image    = models.ForeignKey("wagtailimages.Image", blank = False, null = True, on_delete = models.SET_NULL, related_name = "+")
+
+# 	banner_cta = models.ForeignKey("wagtailcore.Page", blank = True, null = True, on_delete = models.SET_NULL, related_name = "+")
+
+# 	content = StreamField(
+# 			[
+# 				("cta", blocks.CTABlock()),
+# 			],
+# 			null = True,
+# 			blank = True,
+# 		)
+
+# 	content_panels = Page.content_panels + [
+# 		MultiFieldPanel([
+# 			FieldPanel("banner_title"), 
+# 			FieldPanel("banner_subtitle"),
+# 			ImageChooserPanel("banner_image"),
+# 			PageChooserPanel("banner_cta"),
+# 			], 
+# 			heading = "Banner Options"),
+
+# 		MultiFieldPanel([
+# 			InlinePanel("carousel_images", max_num = 5, min_num = 1, label = "IMAGE"), 
+# 			], 
+# 			heading = "Carousel Images"),
+
+# 		MultiFieldPanel([
+# 			StreamFieldPanel("content"),
+# 			],
+# 			heading = "Content"),
+# 		]
+
+
+# 	class Meta:
+
+# 		verbose_name = "Home Page"
+# 		verbose_name_plural = "Home Pages"
+
+
+
+
+			# ROUTABLE PAGE
+class HomePage(RoutablePageMixin, Page):
 
 	templates = "home/home_page.html"
 
@@ -68,5 +123,24 @@ class HomePage(Page):
 
 		verbose_name = "Home Page"
 		verbose_name_plural = "Home Pages"
+
+
+	@route(r"^subscribe/$")
+	def the_subscribe_page(self, request, *args, **kwargs):
+		context = self.get_context(request, *args, **kwargs)
+
+		context["a_special_test"] = "Hello World 123321"
+
+		return render(request, "home/subscribe.html", context)
+
+
+
+
+
+
+
+
+
+
 
 

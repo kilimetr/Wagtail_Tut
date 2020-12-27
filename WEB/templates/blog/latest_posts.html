@@ -1,24 +1,14 @@
 {% extends "base.html" %}
 
-{% load wagtailimages_tags wagtailroutablepage_tags %}
+{% load wagtailimages_tags %}
 
 {% block content %}
 
-	<h2>Cathegories</h2>
-		<ul>
-			{% for cat in cathegories %}
-
-			<li>
-				<a href="?cathegory={{ cat.slug }}">{{ cat.slug }}</a>
-				{{ cat.name }}
-			</li>
-			{% endfor %}
-		</ul>
-
-	<a href="{% routablepageurl page "latest_blog_posts"%}">View latest blog posts on in</a>
-
 	<div class="container">
-		{% for post in posts %}
+		<h1>Latest Posts</h1>
+		<!-- <h2>{{ name }}: {{ website }}</h2> -->
+		<h3>special link is {{ a_special_link }}</h3>
+		{% for post in latest_posts %}
 			<div class="row">
 				<div class="col-sm-3">
 					{% image post.blog_image fill-250x250 as blog_img %}

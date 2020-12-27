@@ -10,6 +10,8 @@ from search import views as search_views
 
 import debug_toolbar
 
+from wagtail.contrib.sitemaps.views import sitemap
+
 urlpatterns = [
     path('django-admin/', admin.site.urls),
 
@@ -18,6 +20,8 @@ urlpatterns = [
 
     path('search/', search_views.search, name='search'),
     path('__debug__/', include(debug_toolbar.urls)),
+
+    path(r"sitemap.xml", sitemap), # přidáno kvůli sitemap
 
 ]
 
