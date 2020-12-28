@@ -21,6 +21,9 @@ from wagtail.admin.edit_handlers	import InlinePanel
 from modelcluster.fields import ParentalManyToManyField
 from django 			 import forms
 
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+
 
 # 			STATIC
 # class BlogListingPage(Page):
@@ -43,13 +46,49 @@ from django 			 import forms
 
 
 
+# class BlogDetailPage(Page):
+# 	# BLOG DETAIL PAGE
+# 	template = "blog/blog_detail_page.html"
+
+# 	custom_title = models.CharField(max_length = 100, blank = False, null = False, help_text = "Overwrite the default title")
+	
+# 	blog_image = models.ForeignKey("wagtailimages.Image", blank = False, null = True, related_name = "+", on_delete = models.SET_NULL)
+
+# 	content = StreamField([
+# 			("title_and_text",  blocks.TitleAndTextBlock()),
+# 			("full_richtext",   blocks.RichtextBlock()),
+# 			("simple_richtext", blocks.SimpleRichtextBlock()),
+# 			("cards",           blocks.CardBlock()),
+# 			("cta",             blocks.CTABlock()),
+# 		])
+
+# 	cathegories = ParentalManyToManyField("blog.BlogCathegory", blank = True) # přidáno kvůli blog cathegory - snippet checkboxes
+
+# 	content_panels = Page.content_panels + [
+# 		FieldPanel("custom_title"),
+# 		ImageChooserPanel("blog_image"),
+# 		MultiFieldPanel([
+# 			InlinePanel("blog_authors", label = "Author", min_num = 1, max_num = 4)
+# 			],
+# 			heading = "Author(s)",
+# 			),
+# 		MultiFieldPanel([
+# 			FieldPanel("cathegories", widget = forms.CheckboxSelectMultiple)
+# 			],
+# 			heading = "Cathegory"),
+# 		StreamFieldPanel("content"),
+# 	]
+
+
+
+			# SUBCLASSES
 class BlogDetailPage(Page):
-	# BLOG DETAIL PAGE
+	# BLOG DETAIL PAGE 		parental
 	template = "blog/blog_detail_page.html"
 
 	custom_title = models.CharField(max_length = 100, blank = False, null = False, help_text = "Overwrite the default title")
 	
-	blog_image = models.ForeignKey("wagtailimages.Image", blank = False, null = True, related_name = "+", on_delete = models.SET_NULL)
+	banner_image = models.ForeignKey("wagtailimages.Image", blank = False, null = True, related_name = "+", on_delete = models.SET_NULL)
 
 	content = StreamField([
 			("title_and_text",  blocks.TitleAndTextBlock()),
@@ -63,7 +102,7 @@ class BlogDetailPage(Page):
 
 	content_panels = Page.content_panels + [
 		FieldPanel("custom_title"),
-		ImageChooserPanel("blog_image"),
+		ImageChooserPanel("banner_image"),
 		MultiFieldPanel([
 			InlinePanel("blog_authors", label = "Author", min_num = 1, max_num = 4)
 			],
@@ -75,6 +114,59 @@ class BlogDetailPage(Page):
 			heading = "Cathegory"),
 		StreamFieldPanel("content"),
 	]
+
+
+
+	# FIRST SUBCLASSED BLOG DETAIL PAGE
+class ArticleBlogPage(BlogDetailPage):
+	# SUBCLASSED BLOG POST PAGE FOR ARTICLES 	child
+	template = "blog/article_blog_page.html"
+
+	subtitle    = models.CharField(max_length = 100, blank = True, null = True)
+	intro_image = models.ForeignKey("wagtailimages.Image", blank = True, null = True, on_delete = models.SET_NULL, help_text = "Best size for \
+				  this image will be 1000x1000")
+
+	content_panels = Page.content_panels + [
+		FieldPanel("custom_title"),
+		FieldPanel("subtitle"),
+		ImageChooserPanel("banner_image"),
+		ImageChooserPanel("intro_image"),
+		MultiFieldPanel([
+			InlinePanel("blog_authors", label = "Author", min_num = 1, max_num = 4)
+			],
+			heading = "Author(s)",
+			),
+		MultiFieldPanel([
+			FieldPanel("cathegories", widget = forms.CheckboxSelectMultiple)
+			],
+			heading = "Cathegory"),
+		StreamFieldPanel("content"),
+	]
+
+
+
+	# SECOND SUBCLASSED BLOG DETAIL PAGE
+class VideoBlogPage(BlogDetailPage):
+	# SUBCLASSED BLOG POST PAGE FOR ARTICLES 	child
+	template = "blog/video_blog_page.html"
+
+	youtube_video_id = models.CharField(max_length = 30)
+
+	content_panels = Page.content_panels + [
+			FieldPanel("custom_title"),
+			ImageChooserPanel("banner_image"),
+			MultiFieldPanel([
+				InlinePanel("blog_authors", label = "Author", min_num = 1, max_num = 4)
+				],
+				heading = "Author(s)",
+				),
+			MultiFieldPanel([
+				FieldPanel("cathegories", widget = forms.CheckboxSelectMultiple)
+				],
+				heading = "Cathegory"),
+			FieldPanel("youtube_video_id"),
+			StreamFieldPanel("content"),
+		]
 
 
 
@@ -98,6 +190,20 @@ class BlogListingPage(RoutablePageMixin, Page):
 		context["a_special_link"] = self.reverse_subpage("latest_blog_posts")
 		context["authors"] = BlogAuthor.objects.all()
 		context["cathegories"] = BlogCathegory.objects.all()
+
+		# pagination
+		all_posts = BlogDetailPage.objects.live().public().order_by("-first_published_at")
+		paginator = Paginator(all_posts, 2) # 1 post per page
+		page = request.GET.get("page") # page = 1, page = 2, ...
+
+		try:
+			posts = paginator.page(page)
+		except PageNotAnInteger:
+			posts = paginator.page(1)
+		except EmptyPage:
+			posts = paginator.page(paginator.num_pages)
+
+		context["posts"] = posts
 
 		return context
 
