@@ -31,8 +31,10 @@ INSTALLED_APPS = [
     "site_settings",
     "subscribers",
     "blog",
+    "menus",
+    "contact",
 
-    'wagtail.contrib.forms',
+    'wagtail.contrib.forms', # musí být přidáno kvůli contact app
     'wagtail.contrib.redirects',
     "wagtail.contrib.settings", # přidáno kvůli social_media_settings
     "wagtail.contrib.modeladmin", # přidáno kvůli subscribers
@@ -58,6 +60,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "django.contrib.sitemaps", # přidáno kvůli sitemaps
+
+    "captcha", # from package django-captcha
+    "wagtailcaptcha", # wagtail package itself
 ]
 
 MIDDLEWARE = [
@@ -171,3 +176,11 @@ WAGTAIL_SITE_NAME = "WEB"
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 BASE_URL = 'http://example.com'
+
+
+
+    # RECAPTCHA SETTINGS version v2 + first choise
+RECAPTCHA_PUBLIC_KEY  = "6LdzGx4aAAAAAJKXapxQ8mP_Of3FjX6L6T20MQwa"
+RECAPTCHA_PRIVATE_KEY = "6LdzGx4aAAAAAGxa1KLLWN7b71KRzLfa7Uy39elO"
+NOCAPTCHA             = True
+

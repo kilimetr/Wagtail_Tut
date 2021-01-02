@@ -23,6 +23,9 @@ from django 			 import forms
 
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
+from django.core.cache 		 import cache
+from django.core.cache.utils import make_template_fragment_key
+
 
 
 # 			STATIC
@@ -114,6 +117,19 @@ class BlogDetailPage(Page):
 			heading = "Cathegory"),
 		StreamFieldPanel("content"),
 	]
+
+
+			# CACHE SAVE
+	def save(self, *args, **kwargs):
+		print("UKLÁDÁM")
+		print("UKLÁDÁM")
+		print("UKLÁDÁM")
+		print("UKLÁDÁM")
+		print("UKLÁDÁM")
+		key = make_template_fragment_key("blog_post_preview", [self.id])
+		cache.delete(key)
+
+		return super().save(*args, **kwargs)
 
 
 
