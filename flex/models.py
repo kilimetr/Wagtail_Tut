@@ -6,11 +6,17 @@ from wagtail.core.fields 		 import StreamField
 
 from streams import blocks
 
+from wagtail.core import blocks as streamfielBLOCKS
+
+
 
 # FLEXIBLE PAGE
 
 class FlexPage(Page):
 	template = "flex/flex_page.html"
+
+	subpage_types = ["flex.FlexPage", "contact.ContactPage"] # přidáno kvůli jaký parrent může mít children
+	parent_page_types = ["flex.FlexPage", "home.HomePage"] # přidáno kvůli jaký parrent může mít children
 
 	content = StreamField(
 		[
@@ -20,6 +26,8 @@ class FlexPage(Page):
 			("cards",           blocks.CardBlock()),
 			("cta",             blocks.CTABlock()),
 			("button_block",    blocks.ButtonBlock()),
+			("char_block",		streamfielBLOCKS.CharBlock(required = True, help_text = "Help Text", 
+				min_length = 5, max_length = 50, template = "streams/char_block.html")), # deep dive to streamfield - custom charblock
 		],
 		null = True,
 		blank = True,

@@ -12,6 +12,10 @@ import debug_toolbar
 
 from wagtail.contrib.sitemaps.views import sitemap
 
+from .api import api_router
+
+
+
 urlpatterns = [
     path('django-admin/', admin.site.urls),
 
@@ -23,6 +27,9 @@ urlpatterns = [
 
     path(r"sitemap.xml", sitemap), # přidáno kvůli sitemap
 
+    path(r"api/v2/", api_router.urls), # přidáno kvůli API v2
+
+    path(r'', include('allauth.urls')), # přidáno kvůli django allauth
 ]
 
 
@@ -38,6 +45,7 @@ urlpatterns = urlpatterns + [
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's page serving mechanism. This should be the last pattern in
     # the list:
+    # path(r'', include('allauth.urls')), # přidáno kvůli django allauth
     path("", include(wagtail_urls)),
 
     # Alternatively, if you want Wagtail pages to be served from a subpath

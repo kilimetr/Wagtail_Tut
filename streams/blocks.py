@@ -118,21 +118,5 @@ class ButtonBlock(blocks.StructBlock):
 			label       = "Single Button"
 			value_class = LinkStructValue
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
 

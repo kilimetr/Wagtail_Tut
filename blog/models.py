@@ -26,6 +26,9 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.core.cache 		 import cache
 from django.core.cache.utils import make_template_fragment_key
 
+from modelcluster.contrib.taggit import ClusterTaggableManager
+from taggit.models 				 import TaggedItemBase
+
 
 
 # 			STATIC
@@ -84,10 +87,21 @@ from django.core.cache.utils import make_template_fragment_key
 
 
 
+		# TAGS
+class BlogPageTag(TaggedItemBase):
+	content_object = ParentalKey("BlogDetailPage", related_name = "tagged_items", on_delete = models.CASCADE)
+
+
+
 			# SUBCLASSES
 class BlogDetailPage(Page):
 	# BLOG DETAIL PAGE 		parental
 	template = "blog/blog_detail_page.html"
+
+	subpage_types = [] # přidáno kvůli jaký parrent může mít children
+	parent_page_types = ["blog.BlogListingPage"] # přidáno kvůli jaký parrent může mít children
+
+	tags = ClusterTaggableManager(through = BlogPageTag, blank = True) # přidáno kvůli tags
 
 	custom_title = models.CharField(max_length = 100, blank = False, null = False, help_text = "Overwrite the default title")
 	
@@ -105,6 +119,7 @@ class BlogDetailPage(Page):
 
 	content_panels = Page.content_panels + [
 		FieldPanel("custom_title"),
+		FieldPanel("tags"),
 		ImageChooserPanel("banner_image"),
 		MultiFieldPanel([
 			InlinePanel("blog_authors", label = "Author", min_num = 1, max_num = 4)
@@ -145,6 +160,7 @@ class ArticleBlogPage(BlogDetailPage):
 	content_panels = Page.content_panels + [
 		FieldPanel("custom_title"),
 		FieldPanel("subtitle"),
+		FieldPanel("tags"),
 		ImageChooserPanel("banner_image"),
 		ImageChooserPanel("intro_image"),
 		MultiFieldPanel([
@@ -192,6 +208,12 @@ class BlogListingPage(RoutablePageMixin, Page):
 	# LISTING PAGE LISTS ALL THE BLOG DETAIL PAGES
 	template = "blog/blog_listing_page.html"
 
+	ajax_template = "blog/blog_listing_page_ajax.html"
+
+	subpage_types = ["blog.ArticleBlogPage", "blog.VideoBlogPage"] # přidáno kvůli jaký parrent může mít children
+
+	max_count = 1 # přidáno kvůli jaký parrent může mít children
+
 	custom_title = models.CharField(max_length = 100, blank = False, null = False, help_text = "Overwrite the default title")
 
 	content_panels = Page.content_panels + [
@@ -209,6 +231,12 @@ class BlogListingPage(RoutablePageMixin, Page):
 
 		# pagination
 		all_posts = BlogDetailPage.objects.live().public().order_by("-first_published_at")
+
+		# přidáno kvůli tags
+		if request.GET.get("tag", None):
+			tags = request.GET.get("tag")
+			all_posts = all_posts.filter(tags__slug__in = ["tags"]) # přidáno kvůli tags
+
 		paginator = Paginator(all_posts, 2) # 1 post per page
 		page = request.GET.get("page") # page = 1, page = 2, ...
 
@@ -314,5 +342,9 @@ class BlogCathegory(models.Model):
 		return self.name
 
 register_snippet(BlogCathegory)
+
+
+
+
 
 

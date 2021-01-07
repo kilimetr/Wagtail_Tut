@@ -14,6 +14,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 INSTALLED_APPS = INSTALLED_APPS + [
 		"debug_toolbar",
+		"django_extensions", # kvůli API
+		"wagtail.contrib.styleguide", # backend style - ikony, ...
 	]
 
 MIDDLEWARE = MIDDLEWARE + [

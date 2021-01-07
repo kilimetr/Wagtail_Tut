@@ -15,6 +15,10 @@ from wagtail.admin.edit_handlers  import InlinePanel, MultiFieldPanel
 from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from django.shortcuts					  import render
 
+from wagtail.api import APIField
+
+from wagtail.admin.edit_handlers import ObjectList, TabbedInterface
+
 
 
 class HomePageCarouselImages(Orderable):
@@ -25,6 +29,11 @@ class HomePageCarouselImages(Orderable):
 	carousel_image = models.ForeignKey("wagtailimages.Image", null = True, blank = False, on_delete = models.SET_NULL, related_name = "+")
 
 	panels = [ImageChooserPanel("carousel_image"),]
+
+	# api_fields = [
+	# 	APIField("carousel_images"),
+	# 	APIField("a_different_field_name"),
+	# ]
 
 
 		# STATIC
@@ -82,7 +91,9 @@ class HomePage(RoutablePageMixin, Page):
 
 	templates = "home/home_page.html"
 
-	max_count = 1
+	subpage_types = ["blog.BlogListingPage", "contact.ContactPage", "flex.FlexPage"] # přidáno kvůli jaký parrent může mít children
+	parent_page_type = ["wagtailcore.Page"] # přidáno kvůli jaký parrent může mít children
+	# max_count = 1 # přidáno kvůli jaký parrent může mít children
 
 	banner_title    = models.CharField(max_length = 100, blank = False, null = True)
 	banner_subtitle = RichTextField(features = ["bold", "italic"])
@@ -97,6 +108,15 @@ class HomePage(RoutablePageMixin, Page):
 			null = True,
 			blank = True,
 		)
+
+	api_fields = [
+		APIField("banner_title"),
+		APIField("banner_subtitle"),
+		APIField("banner_image"),
+		APIField("banner_cta"),
+		APIField("carousel_images"),
+		APIField("banner_cta"),
+	]
 
 	content_panels = Page.content_panels + [
 		MultiFieldPanel([
@@ -118,6 +138,24 @@ class HomePage(RoutablePageMixin, Page):
 			heading = "Content"),
 		]
 
+	# úprava na admin pages content/promote/settings
+	# promote_panels  = []
+	# settings_panels = []
+	sidebar_panels = [
+		MultiFieldPanel([
+			FieldPanel("banner_title"),
+			FieldPanel("banner_subtitle"),
+			ImageChooserPanel("banner_image"),
+			PageChooserPanel("banner_cta")],
+			heading = "Custom 1"),
+		]
+	edit_handler = TabbedInterface([
+		ObjectList(content_panels, heading = "Custom"),
+		ObjectList(Page.promote_panels, heading = "Promotional Stuff"),
+		ObjectList(Page.settings_panels, heading = "Setting Stuff"),
+		ObjectList(sidebar_panels, heading = "SideBarrr Settings"),
+		])
+
 
 	class Meta:
 
@@ -133,10 +171,15 @@ class HomePage(RoutablePageMixin, Page):
 
 		return render(request, "home/subscribe.html", context)
 
+		# pojmenování Home page jinak
+	def get_admin_display_title(self):
+		return "Houmíček"
 
-
-
-
+		# customize wagtail page property values
+# HomePage._meta.get_field("title").verbose_name = "To any verbose name"
+# HomePage._meta.get_field("title").help_text	   = ""
+# HomePage._meta.get_field("title").default	   = "Some Default title"
+# HomePage._meta.get_field("slug").default	   = "Some Default slug"
 
 
 

@@ -17,6 +17,9 @@ class FormField(AbstractFormField):
 # class ContactPage(AbstractEmailForm):   BEFORE INSTALLED CAPTCHA
 class ContactPage(WagtailCaptchaEmailForm):   #	AFTER INSTALLED CAPTCHA
 	template = "contact/contact_page.html"
+
+	subpage_types = [] # přidáno kvůli jaký parrent může mít children
+	parent_page_types = ["home.HomePage"] # přidáno kvůli jaký parrent může mít children
 	
 	intro          = RichTextField(blank = True)
 	thank_you_text = RichTextField(blank = True)
