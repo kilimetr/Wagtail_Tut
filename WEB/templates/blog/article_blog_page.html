@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load wagtailimages_tags wagtailcore_tags %}
+
+{% block content %}
+
+	{% image self.banner_image fill-1200x300 as banner %}
+
+	<img src="{{ banner.url }}" alt="{{ banner.alt }}" style="width: 100%; height: auto;">
+
+
+	<h1>Tags:</h1>
+
+	{% for tag in page.tags.all %}
+		<a href="/blog/?tag= {{ tag.slug }}">{{ tag }} -- {{ tag.slug }}</a> <br>
+	{% endfor%}
+
+
+	<div class="container mt-5 mb-5">
+		<div class="text-center">
+			<h1>
+				{% if self.custom_title %}
+					{{ self.custom_title }}
+				{% else %}
+					{{ self.title }}
+				{% endif %}
+			</h1>
+			<h3>{% if self.subtitle %}
+					{{ self.subtitle }}
+				{% endif %}
+			</h3>
+
+			{% if self.intro_image %}
+				<div class="contai">
+					<div class="row">
+						<div class="col-lg-8 offset-lg-2">
+							{% image self.intro_image fill-100x100 as intro_img %}
+							<img src="{{ intro_img.url }}" alt="{{ intro_img.alt}}">
+						</div>
+					</div>
+				</div>
+			{% endif %}
+
+		</div>
+		<h4>
+				<ul>
+					{% for item in self.blog_authors.all %}
+						{% image item.author.image fill-50x50 as img %}
+					<li>
+						<img src="{{ img.url }}" alt="{{ item.author.name }}">
+
+						{{ item.author.name }}
+
+						{% if item.author.website %}
+							<a href="{{ item.author.website }}">(website)</a>
+						{% endif %}
+					</li>
+					{% endfor %}
+				</ul>
+			</h4>
+	</div>
+
+	<h2>Cathegories</h2>
+	<ul>
+		{% for cat in self.cathegories.all %}
+
+		<li>
+			<a href="{{ self.get_parent.url }}?cathegory={{ cat.slug }}">{{ cat.slug }}</a>
+			{{ cat.name }}
+		</li>
+		{% endfor %}
+	</ul>
+
+	<div class="conteiner">
+		<div class="row">
+			<div class="col-lg-8 offset-lg-2">
+
+				{% for block in page.content %}
+					{% include_block block %}
+				{% endfor %}
+
+			</div>
+		</div>
+	</div>
+	
+
+
+
+{% endblock content %}
+
